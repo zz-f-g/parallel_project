@@ -5,14 +5,15 @@ namespace parallel
 {
     std::thread thrds[MAX_THREADS];
 
-    void merge(int *array, int left, int mid, int right)
+    template <typename T>
+    void merge(T *array, int left, int mid, int right)
     {
         int i, j, k;
         int n1 = mid - left + 1;
         int n2 = right - mid;
 
-        int *L = new int[n1];
-        int *R = new int[n2];
+        T *L = new T[n1];
+        T *R = new T[n2];
 
         for (i = 0; i < n1; i++)
         {
@@ -58,7 +59,8 @@ namespace parallel
         delete[] R;
     }
 
-    void merge_sort(int *array, int left, int right, int level, int idx_thd)
+    template <typename T>
+    void merge_sort(T *array, int left, int right, int level, int idx_thd)
     {
         if (left < right)
         {
@@ -73,8 +75,7 @@ namespace parallel
                 int child_idx = idx_thd + (1 << level);
                 thrds[idx_thd + (1 << level)] = std::thread(
                     merge_sort,
-                    array, left, mid, level + 1, idx_thd + (1 << level)
-                );
+                    array, left, mid, level + 1, idx_thd + (1 << level));
                 merge_sort(array, mid + 1, right, level + 1, idx_thd);
                 thrds[idx_thd + (1 << level)].join();
             }

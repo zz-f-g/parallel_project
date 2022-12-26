@@ -21,14 +21,15 @@ namespace cascade
         return max_temp;
     }
 
-    void merge(int *array, int left, int mid, int right)
+    template <typename T>
+    void merge(T *array, int left, int mid, int right)
     {
         int i, j, k;
         int n1 = mid - left + 1;
         int n2 = right - mid;
 
-        int *L = new int[n1];
-        int *R = new int[n2];
+        T *L = new T[n1];
+        T *R = new T[n2];
 
         for (i = 0; i < n1; i++)
         {
@@ -74,7 +75,8 @@ namespace cascade
         delete[] R;
     }
 
-    void merge_sort(int *array, int left, int right)
+    template <typename T>
+    void merge_sort(T *array, int left, int right)
     {
         if (left < right)
         {
