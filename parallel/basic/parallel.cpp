@@ -5,14 +5,60 @@ namespace parallel
 {
     std::thread thrds[MAX_THREADS];
 
-    void merge(int *array, int left, int mid, int right)
+    void sum(float *array, int left, int right, float *pres, int level, int idx_thd)
+    {
+        float a, b;
+        if (left < right)
+        {
+            int mid = left + (right - left) / 2;
+            if ((1 << level) >= MAX_THREADS)
+            {
+                return cascade::sum(array, left, right, pres);
+            }
+            else
+            {
+                int child_idx = idx_thd + (1 << level);
+                thrds[idx_thd + (1 << level)] = std::thread(
+                    sum,
+                    array, left, mid, &a, level + 1, idx_thd + (1 << level));
+                sum(array, mid + 1, right, &b, level + 1, idx_thd);
+                thrds[idx_thd + (1 << level)].join();
+            }
+            *pres = a + b;
+        }
+    }
+
+    void mymax(float *array, int left, int right, float *pres, int level, int idx_thd)
+    {
+        float a, b;
+        if (left < right)
+        {
+            int mid = left + (right - left) / 2;
+            if ((1 << level) >= MAX_THREADS)
+            {
+                return cascade::mymax(array, left, right, pres);
+            }
+            else
+            {
+                int child_idx = idx_thd + (1 << level);
+                thrds[idx_thd + (1 << level)] = std::thread(
+                    mymax,
+                    array, left, mid, &a, level + 1, idx_thd + (1 << level));
+                mymax(array, mid + 1, right, &b, level + 1, idx_thd);
+                thrds[idx_thd + (1 << level)].join();
+            }
+            *pres = (a > b ? a : b);
+        }
+    }
+
+    void merge(float *array, int left, int mid, int right)
     {
         int i, j, k;
         int n1 = mid - left + 1;
         int n2 = right - mid;
 
-        int *L = new int[n1];
-        int *R = new int[n2];
+        float *L = new float[n1];
+        float *R = new float[n2];
 
         for (i = 0; i < n1; i++)
         {
@@ -58,7 +104,7 @@ namespace parallel
         delete[] R;
     }
 
-    void merge_sort(int *array, int left, int right, int level, int idx_thd)
+    void merge_sort(float *array, int left, int right, int level, int idx_thd)
     {
         if (left < right)
         {
@@ -73,8 +119,7 @@ namespace parallel
                 int child_idx = idx_thd + (1 << level);
                 thrds[idx_thd + (1 << level)] = std::thread(
                     merge_sort,
-                    array, left, mid, level + 1, idx_thd + (1 << level)
-                );
+                    array, left, mid, level + 1, idx_thd + (1 << level));
                 merge_sort(array, mid + 1, right, level + 1, idx_thd);
                 thrds[idx_thd + (1 << level)].join();
             }

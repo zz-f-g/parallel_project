@@ -21,14 +21,33 @@ namespace cascade
         return max_temp;
     }
 
-    void merge(int *array, int left, int mid, int right)
+    void sum(float *array, int left, int right, float *pres)
+    {
+        *pres = 0;
+        for (int i = left; i <= right; i++)
+        {
+            *pres += array[i];
+        }
+    }
+
+    void mymax(float *array, int left, int right, float *pres)
+    {
+        *pres = 0;
+        for (int i = left; i <= right; i++)
+        {
+            if (*pres < array[i])
+                *pres = array[i];
+        }
+    }
+
+    void merge(float *array, int left, int mid, int right)
     {
         int i, j, k;
         int n1 = mid - left + 1;
         int n2 = right - mid;
 
-        int *L = new int[n1];
-        int *R = new int[n2];
+        float *L = new float[n1];
+        float *R = new float[n2];
 
         for (i = 0; i < n1; i++)
         {
@@ -74,7 +93,7 @@ namespace cascade
         delete[] R;
     }
 
-    void merge_sort(int *array, int left, int right)
+    void merge_sort(float *array, int left, int right)
     {
         if (left < right)
         {
