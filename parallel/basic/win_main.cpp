@@ -1,3 +1,7 @@
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#pragma comment(lib,"ws2_32.lib")
+#include <time.h>
+#include <WinSock2.h>
 #include <iostream>
 #include <thread>
 #include <windows.h>
@@ -8,7 +12,7 @@ int main()
     using std::cout;
     using std::endl;
 	LARGE_INTEGER start, end;
-    float *arr = new float [DATANUM];
+    float *arr = new float [2 * DATANUM + 1];
     float sum_res;
     float max_res;
     for (int i = 0; i < DATANUM; i++)
@@ -65,5 +69,48 @@ int main()
     for (int i = 0; i < DATANUM; i+=100000)
         cout << arr[i] << ' ';
     cout << endl;
+
+/* communicate */
+    WSAData wsaData;
+    WORD DllVersion = MAKEWORD(2, 1);
+    if (WSAStartup(DllVersion, &wsaData) != 0)
+    {
+        MessageBoxA(NULL, "Winsock startup error", "Error", MB_OK | MB_ICONERROR);
+        exit(1);
+    }
+
+    SOCKADDR_IN addr;
+    int sizeofaddr = sizeof(addr);
+    addr.sin_family = AF_INET; //IPv4 Socket
+    addr.sin_addr.s_addr = inet_addr(ADDR_SRV); //Addres = localhost
+    addr.sin_port = htons(8083); //Port = 1111
+
+    SOCKET Connection = socket(AF_INET, SOCK_STREAM, NULL);
+    if (connect(Connection, (SOCKADDR*)&addr, sizeofaddr) != 0) //Connection
+    {
+        MessageBoxA(NULL, "Bad Connection", "Error", MB_OK | MB_ICONERROR);
+        return 0;
+    }
+
+    cout << "begin communication" << endl;
+    //srand(time(NULL));
+
+    arr[2 * DATANUM] = 0.0;
+    while (1) //不等于0 循环
+    {
+        recv(Connection, (char*)(arr + DATANUM), sizeof(float)* (DATANUM + 1), NULL);
+        if (arr[2 * DATANUM] - (-1.0f) < 1e-6)
+            break;
+    }
+
+    float finish = -2.0f;
+    send(Connection, (char*)&finish, sizeof(float), NULL);
+
+    cout << "buffer:" << endl;
+    for (int i = 0; i < DATANUM; i += 1000000)
+        cout << arr[DATANUM + i] << ' ';
+    cout << endl;
+    closesocket(Connection);
+    WSACleanup();
     return 0;
 }

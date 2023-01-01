@@ -2,6 +2,7 @@
 #define MAX_THREADS 128
 #define DATANUM 12800000
 #define SUBDATANUM (DATANUM / MAX_THREADS)
+#define ADDR_SRV "172.31.254.82"
 
 namespace cascade
 {
