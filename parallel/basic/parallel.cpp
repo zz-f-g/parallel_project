@@ -60,6 +60,7 @@ namespace parallel
         float *L = new float[n1];
         float *R = new float[n2];
 
+
         for (i = 0; i < n1; i++)
         {
             L[i] = array[left + i];
