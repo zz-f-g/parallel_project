@@ -12,19 +12,17 @@ int main()
 {
     using std::cout;
     using std::endl;
-    float* arr = new float[HALF_NUM];
+
+   /********************** initial data **************/
+    float* arr = new float[DATANUM];
     float sum_res;
     float max_res;
-    for (int i = 0; i < HALF_NUM; i++)
-        arr[i] = HALF_NUM - i + 0.1f;
-    for (int i = 0; i < HALF_NUM; i += 100000)
-        cout << arr[i] << ' ';
+    for (int i = 0; i < DATANUM; i++)
+        arr[i] = DATANUM - i + 0.1f;
     cout << endl;
-
 
     /*************** communication ****************/
     char buffer[BUF_SIZE];
-    arr[HALF_NUM] = -1.0f;
     std::cout << "begin" << std::endl;
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
@@ -62,7 +60,7 @@ int main()
     /********* SUM ********/
     cout << "--------------------------------" << endl;
     cout << "SUM" << endl;
-    parallel::sum(arr, 0, HALF_NUM - 1, &sum_res, 0, 0);
+    parallel::sum(arr, HALF_NUM, DATANUM - 1, &sum_res, 0, 0);
     cout << "CASCADE" << endl;
     cout << "result: " << sum_res << endl;
     cout << "--------------------------------" << endl;
@@ -82,7 +80,7 @@ int main()
     /********* MAX ********/
     cout << "--------------------------------" << endl;
     cout << "MAX" << endl;
-    parallel::mymax(arr, 0, HALF_NUM - 1, &max_res, 0, 0);
+    parallel::mymax(arr, HALF_NUM, DATANUM - 1, &max_res, 0, 0);
     cout << "CASCADE" << endl;
     cout << "result: " << max_res << endl;
     cout << "--------------------------------" << endl;
@@ -100,7 +98,7 @@ int main()
         0);
 
     /********* SORT ********/
-    parallel::merge_sort(arr, 0, HALF_NUM - 1, 0, 0);
+    parallel::merge_sort(arr, HALF_NUM, DATANUM - 1, 0, 0);
     for (int i = 0; i < HALF_NUM; i += 100000)
         cout << arr[i] << ' ';
     cout << endl;
@@ -111,7 +109,7 @@ int main()
     {
         send(
             clientSock,
-            (char*)(arr + i * BUF_SIZE),
+            (char*)(arr + HALF_NUM + i * BUF_SIZE),
             sizeof(float) * (BUF_SIZE),
             0
         );
