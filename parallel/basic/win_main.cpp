@@ -12,7 +12,7 @@ int main()
     using std::cout;
     using std::endl;
     LARGE_INTEGER start, end;
-    float *arr = new float[2 * DATANUM + 1];
+    float *arr = new float[2 * DATANUM];
     float sum_res;
     float max_res;
     for (int i = 0; i < DATANUM; i++)
@@ -93,27 +93,14 @@ int main()
     }
 
     cout << "begin communication" << endl;
-    // srand(time(NULL));
-
-    arr[2 * DATANUM] = 0.0;
     for (int i = 0; i < DATANUM / BUF_SIZE; i++)
     {
-        recv(Connection, (char *)(arr + DATANUM + i * BUF_SIZE), sizeof(float) * (BUF_SIZE), NULL);
+        cout << recv(Connection, (char *)(arr + DATANUM + i * BUF_SIZE), sizeof(float) * (BUF_SIZE), NULL) << endl;
     }
-    /*
-    while (1) // 不等于0 循环
-    {
-        cout << "recv once." << endl;
-        if (arr[2 * DATANUM] - (-1.0f) < 1e-6)
-        {
-            cout << "break" << endl;
-            break;
-        }
-    }*/
     cout << "recv data finished!" << endl;
 
     cout << "buffer:" << endl;
-    for (int i = 0; i < DATANUM; i+=DATANUM/128)
+    for (int i = 0; i < DATANUM; i+=BUF_SIZE)
         cout << arr[DATANUM + i] << ' ';
     cout << endl;
     closesocket(Connection);

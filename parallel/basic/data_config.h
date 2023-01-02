@@ -1,6 +1,6 @@
 #pragma once
 #define MAX_THREADS 128
-#define DATANUM 128000000
+#define DATANUM 128000
 #define SUBDATANUM (DATANUM / MAX_THREADS)
 #define ADDR_SRV "192.168.173.76"
 #define BUF_SIZE 12800

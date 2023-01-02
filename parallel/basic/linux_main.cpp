@@ -90,7 +90,7 @@ int main()
 
     for (int i = 0; i < DATANUM / BUF_SIZE; i++)
     {
-        send(clientSock, (char*)arr, sizeof(float) * (DATANUM + 1), 0);
+        cout << send(clientSock, (char*)(arr + i * BUF_SIZE), sizeof(float) * (BUF_SIZE), 0) << endl;
     }
     
     close(clientSock);
