@@ -14,7 +14,7 @@ int main()
 
     /********************** initial data **************/
     LARGE_INTEGER start, end;
-    ITEM_TYPE* arr = new ITEM_TYPE[DATANUM];
+    ITEM_TYPE *arr = new ITEM_TYPE[DATANUM];
     ITEM_TYPE sum_res;
     ITEM_TYPE max_res;
     for (int i = 0; i < DATANUM; i++)
@@ -39,7 +39,7 @@ int main()
     addr.sin_addr.s_addr = inet_addr(ADDR_SRV); // Addres = localhost
     addr.sin_port = htons(8083);                // Port = 1111
     SOCKET Connection = socket(AF_INET, SOCK_STREAM, NULL);
-    if (connect(Connection, (SOCKADDR*)&addr, sizeofaddr) != 0) // Connection
+    if (connect(Connection, (SOCKADDR *)&addr, sizeofaddr) != 0) // Connection
     {
         // MessageBoxA(NULL, "Bad Connection", "Error", MB_OK | MB_ICONERROR);
         cout << ">>> Bad Connection." << endl;
@@ -54,7 +54,9 @@ int main()
     QueryPerformanceCounter(&start);
     cascade::merge_sort(arr, 0, DATANUM - 1);
     QueryPerformanceCounter(&end);
-    cout << (end.QuadPart - start.QuadPart) << endl;
+    cout << "cascade" << endl;
+    cout << "time: " << (end.QuadPart - start.QuadPart) << endl;
+    cout << "result:" << endl;
     for (int i = 0; i < DATANUM; i += DATANUM / 128)
         cout << arr[i] << '\t';
     cout << endl;
@@ -63,21 +65,16 @@ int main()
     for (int i = 0; i < DATANUM; i++)
         arr[i] = DATANUM - i + 0.1f;
 
-
     QueryPerformanceCounter(&start);
     parallel::merge_sort(arr, 0, HALF_NUM - 1, 0, 0);
-    
-
-    
 
     for (int i = 0; i < HALF_NUM / BUF_SIZE; i++)
     {
         recv(
             Connection,
-            (char*)(arr + HALF_NUM + i * BUF_SIZE),
+            (char *)(arr + HALF_NUM + i * BUF_SIZE),
             sizeof(ITEM_TYPE) * (BUF_SIZE),
-            NULL
-        );
+            NULL);
         if (0 == (i % ANSWER_SEP))
         {
             send(
@@ -86,26 +83,16 @@ int main()
                 sizeof(flag),
                 NULL);
         }
-        //cout << i << ": " << *(arr + DATANUM + i * BUF_SIZE) << endl;
     }
-    cout << ">>> Recv data finished!" << endl;
-    //send(
-    //    Connection,
-    //    &flag,
-    //    sizeof(flag),
-    //    NULL
-    //);
-
-
     parallel::merge(arr, 0, HALF_NUM - 1, DATANUM - 1);
 
-
     QueryPerformanceCounter(&end);
-    cout << (end.QuadPart - start.QuadPart) << endl;
+    cout << "parallel" << endl;
+    cout << "time: " << (end.QuadPart - start.QuadPart) << endl;
+    cout << "result:" << endl;
     for (int i = 0; i < DATANUM; i += DATANUM / 128)
-        cout << arr[i] << ' ';
+        cout << arr[i] << '\t';
     cout << endl;
-
 
     /*********************** sum ***************************/
     // refresh
@@ -127,10 +114,9 @@ int main()
     ITEM_TYPE linux_sum;
     recv(
         Connection,
-        (char*)&linux_sum,
+        (char *)&linux_sum,
         sizeof(ITEM_TYPE),
-        NULL
-    );
+        NULL);
     send(
         Connection,
         &flag,
@@ -138,15 +124,10 @@ int main()
         NULL);
     sum_res += linux_sum;
 
-
     QueryPerformanceCounter(&end);
     cout << "PARALLEL" << endl;
     cout << "result: " << sum_res << endl
-        << "time: " << (end.QuadPart - start.QuadPart) << endl;
-    cout << "--------------------------------" << endl;
-
-    
-
+         << "time: " << (end.QuadPart - start.QuadPart) << endl;
 
     /*********************** max **************************/
     cout << "--------------------------------" << endl;
@@ -156,18 +137,16 @@ int main()
     QueryPerformanceCounter(&end);
     cout << "CASCADE" << endl;
     cout << "result: " << max_res << endl
-        << "time: " << (end.QuadPart - start.QuadPart) << endl;
-
+         << "time: " << (end.QuadPart - start.QuadPart) << endl;
 
     QueryPerformanceCounter(&start);
     parallel::mymax(arr, 0, HALF_NUM - 1, &max_res, 0, 0);
     ITEM_TYPE linux_max;
     recv(
         Connection,
-        (char*)&linux_max,
+        (char *)&linux_max,
         sizeof(ITEM_TYPE),
-        NULL
-    );
+        NULL);
     send(
         Connection,
         &flag,
@@ -176,18 +155,11 @@ int main()
     if (linux_max > max_res)
         max_res = linux_max;
 
-
-
-
     QueryPerformanceCounter(&end);
     cout << "PARALLEL" << endl;
     cout << "result: " << max_res << endl
-        << "time: " << (end.QuadPart - start.QuadPart) << endl;
+         << "time: " << (end.QuadPart - start.QuadPart) << endl;
     cout << "--------------------------------" << endl;
-
-
-
-
 
     closesocket(Connection);
     WSACleanup();

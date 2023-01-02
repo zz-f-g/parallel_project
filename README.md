@@ -1,4 +1,8 @@
-# 大作业
+<h1><center>分布式计算项目</center></h1>
+
+<div align='right'>2051193 马羽</div>
+
+<div align='right'>2052110 郭子瞻</div>
 
 ## 作业要求
 
@@ -12,6 +16,8 @@
 ## 实现原理
 
 本项目使用多线程方法和 socket 通讯，实现了在 Windows 主机和 Ubuntu 虚拟机之间的协作并行计算，包括求和、求最大值和排序。
+
+### 多线程技术
 
 在使用多线程的过程中，创新性地将函数递归和开辟线程结合，节约了多线程在最后汇总计算结果（收割）过程的计算时间。
 
@@ -62,6 +68,24 @@ void merge_sort(float *array, int left, int right, int level, int idx_thd)
 
 ![500](images/README-code-multithread.png)
 
-这里对线程的序号分配作简要说明：
+这里对线程的序号分配作简要说明。分配的线程数应该为 2 的整数次幂，这样就能满足如下的递归树：
 
+![500](images/README-recurse-tree.png)
 
+递归的过程中，应该传递额外的数据：当前递归的深度 ``level`` 和当前的线程序号。由图可知，如果当前递归的深度尚未达到最大深度，需要在函数中创建新线程，新线程的序号和旧线程的序号应该满足如下关系：
+
+$$
+\text{new thread index} = \text{current thread index} + 2^{\text{level}}
+$$
+
+对应于代码中的：
+
+```cpp
+thrds[idx_thd + (1 << level)] = std::thread(
+    merge_sort,
+    array, left, mid, level + 1, idx_thd + (1 << level));
+```
+
+### socket 通信技术
+
+## 演示方法
