@@ -53,6 +53,7 @@ int main()
     cout << endl;
 
 /* communication */
+    char buffer[BUF_SIZE];
     arr[DATANUM] = -1.0f;
     std::cout << "begin" << std::endl;
     int sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -87,13 +88,9 @@ int main()
         return 1;
     }
 
-    float finish = 0.0f;
-    while (1)
+    for (int i = 0; i < DATANUM / BUF_SIZE; i++)
     {
         send(clientSock, (char*)arr, sizeof(float) * (DATANUM + 1), 0);
-        recv(clientSock, (char*)&finish, sizeof(float), 0);
-        if (finish - (-2.0f) < 1e-6)
-            break;
     }
     
     close(clientSock);
