@@ -14,6 +14,7 @@ namespace parallel
             if ((1 << level) >= MAX_THREADS)
             {
                 cascade::sum(array, left, right, pres);
+                return;
             }
             else
             {
@@ -37,6 +38,7 @@ namespace parallel
             if ((1 << level) >= MAX_THREADS)
             {
                 cascade::mymax(array, left, right, pres);
+                return;
             }
             else
             {
