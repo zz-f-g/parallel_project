@@ -48,6 +48,64 @@ int main()
     cout << ">>> Connection Estabished with " << ADDR_SRV << "." << endl;
     char flag = '+';
 
+    /*********************** sort ***************************/
+    cout << "--------------------------------" << endl;
+    cout << "SORT" << endl;
+    QueryPerformanceCounter(&start);
+    cascade::merge_sort(arr, 0, DATANUM - 1);
+    QueryPerformanceCounter(&end);
+    cout << (end.QuadPart - start.QuadPart) << endl;
+    for (int i = 0; i < DATANUM; i += DATANUM / 128)
+        cout << arr[i] << '\t';
+    cout << endl;
+
+    /* initial data again */
+    for (int i = 0; i < DATANUM; i++)
+        arr[i] = DATANUM - i + 0.1f;
+
+
+    QueryPerformanceCounter(&start);
+    parallel::merge_sort(arr, 0, HALF_NUM - 1, 0, 0);
+    
+
+    
+
+    for (int i = 0; i < HALF_NUM / BUF_SIZE; i++)
+    {
+        recv(
+            Connection,
+            (char*)(arr + HALF_NUM + i * BUF_SIZE),
+            sizeof(float) * (BUF_SIZE),
+            NULL
+        );
+        if (0 == (i % ANSWER_SEP))
+        {
+            send(
+                Connection,
+                &flag,
+                sizeof(flag),
+                NULL);
+        }
+        //cout << i << ": " << *(arr + DATANUM + i * BUF_SIZE) << endl;
+    }
+    cout << ">>> Recv data finished!" << endl;
+    //send(
+    //    Connection,
+    //    &flag,
+    //    sizeof(flag),
+    //    NULL
+    //);
+
+
+
+
+    QueryPerformanceCounter(&end);
+    cout << (end.QuadPart - start.QuadPart) << endl;
+    for (int i = 0; i < DATANUM; i += DATANUM / 128)
+        cout << arr[i] << ' ';
+    cout << endl;
+
+    parallel::merge(arr, 0, HALF_NUM - 1, DATANUM - 1);
 
     /*********************** sum ***************************/
     cout << "--------------------------------" << endl;
@@ -86,7 +144,7 @@ int main()
     
 
 
-    /*********************** max ***************************/
+    /*********************** max **************************/
     cout << "--------------------------------" << endl;
     cout << "MAX" << endl;
     QueryPerformanceCounter(&start);
@@ -125,67 +183,6 @@ int main()
 
 
 
-
-
-
-    /*********************** sort ***************************/
-    cout << "--------------------------------" << endl;
-    cout << "SORT" << endl;
-    QueryPerformanceCounter(&start);
-    cascade::merge_sort(arr, 0, DATANUM - 1);
-    QueryPerformanceCounter(&end);
-    cout << (end.QuadPart - start.QuadPart) << endl;
-    for (int i = 0; i < DATANUM; i += DATANUM / 128)
-        cout << arr[i] << '\t';
-    cout << endl;
-
-
-    /* initial data again */
-    for (int i = 0; i < DATANUM; i++)
-        arr[i] = DATANUM - i + 0.1f;
-
-
-    QueryPerformanceCounter(&start);
-    parallel::merge_sort(arr, 0, HALF_NUM - 1, 0, 0);
-    
-
-    
-
-    for (int i = 0; i < HALF_NUM / BUF_SIZE; i++)
-    {
-        recv(
-            Connection,
-            (char*)(arr + HALF_NUM + i * BUF_SIZE),
-            sizeof(float) * (BUF_SIZE),
-            NULL
-        );
-        if (0 == (i % ANSWER_SEP))
-        {
-            send(
-                Connection,
-                &flag,
-                sizeof(flag),
-                NULL);
-        }
-        //cout << i << ": " << *(arr + DATANUM + i * BUF_SIZE) << endl;
-    }
-    cout << ">>> Recv data finished!" << endl;
-    //send(
-    //    Connection,
-    //    &flag,
-    //    sizeof(flag),
-    //    NULL
-    //);
-    parallel::merge(arr, 0, HALF_NUM - 1, DATANUM - 1);
-
-
-
-
-    QueryPerformanceCounter(&end);
-    cout << (end.QuadPart - start.QuadPart) << endl;
-    for (int i = 0; i < DATANUM; i += DATANUM / 128)
-        cout << arr[i] << ' ';
-    cout << endl;
 
 
     closesocket(Connection);

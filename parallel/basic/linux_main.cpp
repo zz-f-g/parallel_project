@@ -56,6 +56,37 @@ int main()
         return 1;
     }
     char flag;
+    /********* SORT ********/
+    parallel::merge_sort(arr, HALF_NUM, DATANUM - 1, 0, 0);
+    for (int i = 0; i < HALF_NUM; i += 100000)
+        cout << arr[i] << '\t';
+    cout << endl;
+
+    
+
+    for (int i = 0; i < HALF_NUM / BUF_SIZE; i++)
+    {
+        send(
+            clientSock,
+            (char*)(arr + HALF_NUM + i * BUF_SIZE),
+            sizeof(float) * (BUF_SIZE),
+            0
+        );
+        if (0 == (i % ANSWER_SEP))
+        {
+            recv(
+                clientSock,
+                &flag,
+                sizeof(flag),
+                0);
+        }
+    }
+    //recv(
+    //    clientSock,
+    //    &flag,
+    //    sizeof(flag),
+    //    0
+    //);
 
     /********* SUM ********/
     cout << "--------------------------------" << endl;
@@ -97,37 +128,6 @@ int main()
         sizeof(flag),
         0);
 
-    /********* SORT ********/
-    parallel::merge_sort(arr, HALF_NUM, DATANUM - 1, 0, 0);
-    for (int i = 0; i < HALF_NUM; i += 100000)
-        cout << arr[i] << ' ';
-    cout << endl;
-
-    
-
-    for (int i = 0; i < HALF_NUM / BUF_SIZE; i++)
-    {
-        send(
-            clientSock,
-            (char*)(arr + HALF_NUM + i * BUF_SIZE),
-            sizeof(float) * (BUF_SIZE),
-            0
-        );
-        if (0 == (i % ANSWER_SEP))
-        {
-            recv(
-                clientSock,
-                &flag,
-                sizeof(flag),
-                0);
-        }
-    }
-    //recv(
-    //    clientSock,
-    //    &flag,
-    //    sizeof(flag),
-    //    0
-    //);
 
     close(clientSock);
     close(sock);
