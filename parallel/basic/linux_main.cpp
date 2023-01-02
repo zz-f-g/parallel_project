@@ -88,13 +88,30 @@ int main()
         return 1;
     }
 
+    char flag;
     for (int i = 0; i < DATANUM / BUF_SIZE; i++)
     {
-        cout << send(clientSock, (char*)(arr + i * BUF_SIZE), sizeof(float) * (BUF_SIZE), 0) << endl;
+        send(
+            clientSock,
+            (char *)(arr + i * BUF_SIZE),
+            sizeof(float) * (BUF_SIZE),
+            0
+        );
+        recv(
+            clientSock,
+            &flag,
+            sizeof(flag),
+            0
+        );
     }
+    recv(
+        clientSock,
+        &flag,
+        sizeof(flag),
+        0
+    );
     
     close(clientSock);
     close(sock);
-
     return 0;
 }

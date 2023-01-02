@@ -1,9 +1,9 @@
 #pragma once
 #define MAX_THREADS 128
-#define DATANUM 128000
+#define DATANUM 1280000
 #define SUBDATANUM (DATANUM / MAX_THREADS)
 #define ADDR_SRV "192.168.173.76"
-#define BUF_SIZE 12800
+#define BUF_SIZE 128
 
 namespace cascade
 {

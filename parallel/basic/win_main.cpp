@@ -17,41 +17,9 @@ int main()
     float max_res;
     for (int i = 0; i < DATANUM; i++)
         arr[i] = DATANUM - i + 0.1f;
-    for (int i = 0; i < DATANUM; i += 100000)
-        cout << arr[i] << ' ';
+    //for (int i = 0; i < DATANUM; i += 100000)
+        //cout << arr[i] << ' ';
     cout << endl;
-
-    cout << "--------------------------------" << endl;
-    cout << "SUM" << endl;
-    QueryPerformanceCounter(&start);
-    cascade::sum(arr, 0, DATANUM - 1, &sum_res);
-    QueryPerformanceCounter(&end);
-    cout << "CASCADE" << endl;
-    cout << "result: " << sum_res << endl
-         << "time: " << (end.QuadPart - start.QuadPart) << endl;
-    QueryPerformanceCounter(&start);
-    parallel::sum(arr, 0, DATANUM - 1, &sum_res, 0, 0);
-    QueryPerformanceCounter(&end);
-    cout << "CASCADE" << endl;
-    cout << "result: " << sum_res << endl
-         << "time: " << (end.QuadPart - start.QuadPart) << endl;
-    cout << "--------------------------------" << endl;
-
-    cout << "--------------------------------" << endl;
-    cout << "MAX" << endl;
-    QueryPerformanceCounter(&start);
-    cascade::mymax(arr, 0, DATANUM - 1, &sum_res);
-    QueryPerformanceCounter(&end);
-    cout << "CASCADE" << endl;
-    cout << "result: " << sum_res << endl
-         << "time: " << (end.QuadPart - start.QuadPart) << endl;
-    QueryPerformanceCounter(&start);
-    parallel::mymax(arr, 0, DATANUM - 1, &sum_res, 0, 0);
-    QueryPerformanceCounter(&end);
-    cout << "CASCADE" << endl;
-    cout << "result: " << sum_res << endl
-         << "time: " << (end.QuadPart - start.QuadPart) << endl;
-    cout << "--------------------------------" << endl;
 
     QueryPerformanceCounter(&start);
     cascade::merge_sort(arr, 0, DATANUM - 1);
@@ -70,13 +38,46 @@ int main()
         cout << arr[i] << ' ';
     cout << endl;
 
+    cout << "--------------------------------" << endl;
+    cout << "SUM" << endl;
+    QueryPerformanceCounter(&start);
+    cascade::sum(arr, 0, DATANUM - 1, &sum_res);
+    QueryPerformanceCounter(&end);
+    cout << "CASCADE" << endl;
+    cout << "result: " << sum_res << endl
+         << "time: " << (end.QuadPart - start.QuadPart) << endl;
+    QueryPerformanceCounter(&start);
+    parallel::sum(arr, 0, DATANUM - 1, &sum_res, 0, 0);
+    QueryPerformanceCounter(&end);
+    cout << "PARALLEL" << endl;
+    cout << "result: " << sum_res << endl
+         << "time: " << (end.QuadPart - start.QuadPart) << endl;
+    cout << "--------------------------------" << endl;
+
+    cout << "--------------------------------" << endl;
+    cout << "MAX" << endl;
+    QueryPerformanceCounter(&start);
+    cascade::mymax(arr, 0, DATANUM - 1, &sum_res);
+    QueryPerformanceCounter(&end);
+    cout << "CASCADE" << endl;
+    cout << "result: " << sum_res << endl
+         << "time: " << (end.QuadPart - start.QuadPart) << endl;
+    QueryPerformanceCounter(&start);
+    parallel::mymax(arr, 0, DATANUM - 1, &sum_res, 0, 0);
+    QueryPerformanceCounter(&end);
+    cout << "PARALLEL" << endl;
+    cout << "result: " << sum_res << endl
+         << "time: " << (end.QuadPart - start.QuadPart) << endl;
+    cout << "--------------------------------" << endl;
+
     /* communicate */
     WSAData wsaData;
     WORD DllVersion = MAKEWORD(2, 1);
     if (WSAStartup(DllVersion, &wsaData) != 0)
     {
-        MessageBoxA(NULL, "Winsock startup error", "Error", MB_OK | MB_ICONERROR);
-        exit(1);
+        // MessageBoxA(NULL, "Winsock startup error", "Error", MB_OK | MB_ICONERROR);
+        cout << ">>> Winsock startup error." << endl;
+        return 0;
     }
 
     SOCKADDR_IN addr;
@@ -84,23 +85,40 @@ int main()
     addr.sin_family = AF_INET;                  // IPv4 Socket
     addr.sin_addr.s_addr = inet_addr(ADDR_SRV); // Addres = localhost
     addr.sin_port = htons(8083);                // Port = 1111
-
     SOCKET Connection = socket(AF_INET, SOCK_STREAM, NULL);
     if (connect(Connection, (SOCKADDR *)&addr, sizeofaddr) != 0) // Connection
     {
-        MessageBoxA(NULL, "Bad Connection", "Error", MB_OK | MB_ICONERROR);
+        // MessageBoxA(NULL, "Bad Connection", "Error", MB_OK | MB_ICONERROR);
+        cout << ">>> Bad Connection." << endl;
         return 0;
     }
-
-    cout << "begin communication" << endl;
+    cout << ">>> Connection Estabished with " << ADDR_SRV << "." << endl;
+    char flag = '+';
     for (int i = 0; i < DATANUM / BUF_SIZE; i++)
     {
-        cout << recv(Connection, (char *)(arr + DATANUM + i * BUF_SIZE), sizeof(float) * (BUF_SIZE), NULL) << endl;
+        recv(
+            Connection,
+            (char *)(arr + DATANUM + i * BUF_SIZE),
+            sizeof(float) * (BUF_SIZE),
+            NULL
+        );
+        send(
+            Connection,
+            &flag,
+            sizeof(flag),
+            NULL
+        );
+        //cout << i << ": " << *(arr + DATANUM + i * BUF_SIZE) << endl;
     }
-    cout << "recv data finished!" << endl;
-
+    cout << ">>> Recv data finished!" << endl;
+    send(
+        Connection,
+        &flag,
+        sizeof(flag),
+        NULL
+    );
     cout << "buffer:" << endl;
-    for (int i = 0; i < DATANUM; i+=BUF_SIZE)
+    for (int i = 0; i < 1000000; i+=10000)
         cout << arr[DATANUM + i] << ' ';
     cout << endl;
     closesocket(Connection);
