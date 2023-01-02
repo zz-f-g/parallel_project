@@ -102,12 +102,14 @@ int main()
             sizeof(float) * (BUF_SIZE),
             NULL
         );
-        send(
-            Connection,
-            &flag,
-            sizeof(flag),
-            NULL
-        );
+        if (0 == (i % ANSWER_SEP))
+        {
+            send(
+                Connection,
+                &flag,
+                sizeof(flag),
+                NULL);
+        }
         //cout << i << ": " << *(arr + DATANUM + i * BUF_SIZE) << endl;
     }
     cout << ">>> Recv data finished!" << endl;
@@ -118,7 +120,7 @@ int main()
         NULL
     );
     cout << "buffer:" << endl;
-    for (int i = 0; i < 1000000; i+=10000)
+    for (int i = 0; i < DATANUM; i+=1000000)
         cout << arr[DATANUM + i] << ' ';
     cout << endl;
     closesocket(Connection);

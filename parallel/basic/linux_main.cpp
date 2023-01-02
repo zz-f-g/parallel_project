@@ -97,12 +97,14 @@ int main()
             sizeof(float) * (BUF_SIZE),
             0
         );
-        recv(
-            clientSock,
-            &flag,
-            sizeof(flag),
-            0
-        );
+        if (0 == (i % ANSWER_SEP))
+        {
+            recv(
+                clientSock,
+                &flag,
+                sizeof(flag),
+                0);
+        }
     }
     recv(
         clientSock,
