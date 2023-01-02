@@ -97,6 +97,7 @@ int main()
     //);
 
 
+    parallel::merge(arr, 0, HALF_NUM - 1, DATANUM - 1);
 
 
     QueryPerformanceCounter(&end);
@@ -105,9 +106,12 @@ int main()
         cout << arr[i] << ' ';
     cout << endl;
 
-    parallel::merge(arr, 0, HALF_NUM - 1, DATANUM - 1);
 
     /*********************** sum ***************************/
+    // refresh
+    for (int i = 0; i < DATANUM; i++)
+        arr[i] = DATANUM - i + 0.1f;
+
     cout << "--------------------------------" << endl;
     cout << "SUM" << endl;
     QueryPerformanceCounter(&start);
