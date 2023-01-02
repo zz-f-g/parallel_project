@@ -6,7 +6,7 @@ namespace cascade
         *pres = 0;
         for (int i = left; i <= right; i++)
         {
-            *pres += log(sqrt(array[i]));
+            *pres += sin(log(sqrt(array[i])));
         }
     }
 
