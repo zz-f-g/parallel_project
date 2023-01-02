@@ -1,7 +1,8 @@
 #include <cmath>
+#include "data_config.h"
 namespace cascade
 {
-    void sum(float *array, int left, int right, float *pres)
+    void sum(ITEM_TYPE *array, int left, int right, ITEM_TYPE *pres)
     {
         *pres = 0;
         for (int i = left; i <= right; i++)
@@ -10,7 +11,7 @@ namespace cascade
         }
     }
 
-    void mymax(float *array, int left, int right, float *pres)
+    void mymax(ITEM_TYPE *array, int left, int right, ITEM_TYPE *pres)
     {
         *pres = 0;
         for (int i = left; i <= right; i++)
@@ -20,14 +21,14 @@ namespace cascade
         }
     }
 
-    void merge(float *array, int left, int mid, int right)
+    void merge(ITEM_TYPE *array, int left, int mid, int right)
     {
         int i, j, k;
         int n1 = mid - left + 1;
         int n2 = right - mid;
 
-        float *L = new float[n1];
-        float *R = new float[n2];
+        ITEM_TYPE *L = new ITEM_TYPE[n1];
+        ITEM_TYPE *R = new ITEM_TYPE[n2];
 
         for (i = 0; i < n1; i++)
         {
@@ -73,7 +74,7 @@ namespace cascade
         delete[] R;
     }
 
-    void merge_sort(float *array, int left, int right)
+    void merge_sort(ITEM_TYPE *array, int left, int right)
     {
         if (left < right)
         {

@@ -14,9 +14,9 @@ int main()
 
     /********************** initial data **************/
     LARGE_INTEGER start, end;
-    float* arr = new float[DATANUM];
-    float sum_res;
-    float max_res;
+    ITEM_TYPE* arr = new ITEM_TYPE[DATANUM];
+    ITEM_TYPE sum_res;
+    ITEM_TYPE max_res;
     for (int i = 0; i < DATANUM; i++)
         arr[i] = DATANUM - i + 0.1f;
 
@@ -75,7 +75,7 @@ int main()
         recv(
             Connection,
             (char*)(arr + HALF_NUM + i * BUF_SIZE),
-            sizeof(float) * (BUF_SIZE),
+            sizeof(ITEM_TYPE) * (BUF_SIZE),
             NULL
         );
         if (0 == (i % ANSWER_SEP))
@@ -124,11 +124,11 @@ int main()
     QueryPerformanceCounter(&start);
     parallel::sum(arr, 0, HALF_NUM - 1, &sum_res, 0, 0);
 
-    float linux_sum;
+    ITEM_TYPE linux_sum;
     recv(
         Connection,
         (char*)&linux_sum,
-        sizeof(float),
+        sizeof(ITEM_TYPE),
         NULL
     );
     send(
@@ -161,11 +161,11 @@ int main()
 
     QueryPerformanceCounter(&start);
     parallel::mymax(arr, 0, HALF_NUM - 1, &max_res, 0, 0);
-    float linux_max;
+    ITEM_TYPE linux_max;
     recv(
         Connection,
         (char*)&linux_max,
-        sizeof(float),
+        sizeof(ITEM_TYPE),
         NULL
     );
     send(

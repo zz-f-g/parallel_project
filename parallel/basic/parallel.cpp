@@ -5,9 +5,9 @@ namespace parallel
 {
     std::thread thrds[MAX_THREADS];
 
-    void sum(float *array, int left, int right, float *pres, int level, int idx_thd)
+    void sum(ITEM_TYPE *array, int left, int right, ITEM_TYPE *pres, int level, int idx_thd)
     {
-        float a, b;
+        ITEM_TYPE a, b;
         if (left < right)
         {
             int mid = left + (right - left) / 2;
@@ -29,9 +29,9 @@ namespace parallel
         }
     }
 
-    void mymax(float *array, int left, int right, float *pres, int level, int idx_thd)
+    void mymax(ITEM_TYPE *array, int left, int right, ITEM_TYPE *pres, int level, int idx_thd)
     {
-        float a, b;
+        ITEM_TYPE a, b;
         if (left < right)
         {
             int mid = left + (right - left) / 2;
@@ -53,14 +53,14 @@ namespace parallel
         }
     }
 
-    void merge(float *array, int left, int mid, int right)
+    void merge(ITEM_TYPE *array, int left, int mid, int right)
     {
         int i, j, k;
         int n1 = mid - left + 1;
         int n2 = right - mid;
 
-        float *L = new float[n1];
-        float *R = new float[n2];
+        ITEM_TYPE *L = new ITEM_TYPE[n1];
+        ITEM_TYPE *R = new ITEM_TYPE[n2];
 
 
         for (i = 0; i < n1; i++)
@@ -107,7 +107,7 @@ namespace parallel
         delete[] R;
     }
 
-    void merge_sort(float *array, int left, int right, int level, int idx_thd)
+    void merge_sort(ITEM_TYPE *array, int left, int right, int level, int idx_thd)
     {
         if (left < right)
         {

@@ -14,9 +14,9 @@ int main()
     using std::endl;
 
    /********************** initial data **************/
-    float* arr = new float[DATANUM];
-    float sum_res;
-    float max_res;
+    ITEM_TYPE* arr = new ITEM_TYPE[DATANUM];
+    ITEM_TYPE sum_res;
+    ITEM_TYPE max_res;
     for (int i = 0; i < DATANUM; i++)
         arr[i] = DATANUM - i + 0.1f;
     cout << endl;
@@ -69,7 +69,7 @@ int main()
         send(
             clientSock,
             (char*)(arr + HALF_NUM + i * BUF_SIZE),
-            sizeof(float) * (BUF_SIZE),
+            sizeof(ITEM_TYPE) * (BUF_SIZE),
             0
         );
         if (0 == (i % ANSWER_SEP))
@@ -99,7 +99,7 @@ int main()
     send(
         clientSock,
         (char*)(&sum_res),
-        sizeof(float),
+        sizeof(ITEM_TYPE),
         0
     );
     recv(
@@ -119,7 +119,7 @@ int main()
     send(
         clientSock,
         (char*)(&max_res),
-        sizeof(float),
+        sizeof(ITEM_TYPE),
         0
     );
     recv(
