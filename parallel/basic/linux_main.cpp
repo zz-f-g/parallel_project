@@ -12,49 +12,19 @@ int main()
 {
     using std::cout;
     using std::endl;
-    float *arr = new float [DATANUM + 1];
+    float* arr = new float[HALF_NUM];
     float sum_res;
     float max_res;
-    for (int i = 0; i < DATANUM; i++)
-        arr[i] = DATANUM - i + 0.1f;
-    for (int i = 0; i < DATANUM; i+=100000)
+    for (int i = 0; i < HALF_NUM; i++)
+        arr[i] = HALF_NUM - i + 0.1f;
+    for (int i = 0; i < HALF_NUM; i += 100000)
         cout << arr[i] << ' ';
     cout << endl;
 
-    cout << "--------------------------------" << endl;
-    cout << "SUM" << endl;
-    cascade::sum(arr, 0, DATANUM - 1, &sum_res);
-    cout << "CASCADE" << endl;
-    cout << "result: " << sum_res << endl;
-    parallel::sum(arr, 0, DATANUM - 1, &sum_res, 0, 0);
-    cout << "CASCADE" << endl;
-    cout << "result: " << sum_res << endl;
-    cout << "--------------------------------" << endl;
 
-    cout << "--------------------------------" << endl;
-    cout << "MAX" << endl;
-    cascade::mymax(arr, 0, DATANUM - 1, &sum_res);
-    cout << "CASCADE" << endl;
-    cout << "result: " << sum_res << endl;
-    parallel::mymax(arr, 0, DATANUM - 1, &sum_res, 0, 0);
-    cout << "CASCADE" << endl;
-    cout << "result: " << sum_res << endl;
-    cout << "--------------------------------" << endl;
-
-    cascade::merge_sort(arr, 0, DATANUM - 1);
-    for (int i = 0; i < DATANUM; i+=100000)
-        cout << arr[i] << ' ';
-    cout << endl;
-    for (int i = 0; i < DATANUM; i++)
-        arr[i] = DATANUM - i + 0.1f;
-    parallel::merge_sort(arr, 0, DATANUM - 1, 0, 0);
-    for (int i = 0; i < DATANUM; i+=100000)
-        cout << arr[i] << ' ';
-    cout << endl;
-
-/* communication */
+    /*************** communication ****************/
     char buffer[BUF_SIZE];
-    arr[DATANUM] = -1.0f;
+    arr[HALF_NUM] = -1.0f;
     std::cout << "begin" << std::endl;
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
@@ -88,12 +58,51 @@ int main()
         return 1;
     }
 
+    /********* SUM ********/
+    cout << "--------------------------------" << endl;
+    cout << "SUM" << endl;
+    parallel::sum(arr, 0, HALF_NUM - 1, &sum_res, 0, 0);
+    cout << "CASCADE" << endl;
+    cout << "result: " << sum_res << endl;
+    cout << "--------------------------------" << endl;
+
+    send(
+        clientSock,
+        (char*)(&sum_res),
+        sizeof(float),
+        0
+    );
+
+    /********* MAX ********/
+    cout << "--------------------------------" << endl;
+    cout << "MAX" << endl;
+    parallel::mymax(arr, 0, HALF_NUM - 1, &max_res, 0, 0);
+    cout << "CASCADE" << endl;
+    cout << "result: " << max_res << endl;
+    cout << "--------------------------------" << endl;
+
+    send(
+        clientSock,
+        (char*)(&max_res),
+        sizeof(float),
+        0
+    );
+
+
+    /********* SORT ********/
+    parallel::merge_sort(arr, 0, HALF_NUM - 1, 0, 0);
+    for (int i = 0; i < HALF_NUM; i += 100000)
+        cout << arr[i] << ' ';
+    cout << endl;
+
+    
+
     char flag;
-    for (int i = 0; i < DATANUM / BUF_SIZE; i++)
+    for (int i = 0; i < HALF_NUM / BUF_SIZE; i++)
     {
         send(
             clientSock,
-            (char *)(arr + i * BUF_SIZE),
+            (char*)(arr + i * BUF_SIZE),
             sizeof(float) * (BUF_SIZE),
             0
         );
@@ -106,13 +115,13 @@ int main()
                 0);
         }
     }
-    recv(
-        clientSock,
-        &flag,
-        sizeof(flag),
-        0
-    );
-    
+    //recv(
+    //    clientSock,
+    //    &flag,
+    //    sizeof(flag),
+    //    0
+    //);
+
     close(clientSock);
     close(sock);
     return 0;

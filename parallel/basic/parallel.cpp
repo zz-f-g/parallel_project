@@ -13,7 +13,7 @@ namespace parallel
             int mid = left + (right - left) / 2;
             if ((1 << level) >= MAX_THREADS)
             {
-                return cascade::sum(array, left, right, pres);
+                cascade::sum(array, left, right, pres);
             }
             else
             {
@@ -36,7 +36,7 @@ namespace parallel
             int mid = left + (right - left) / 2;
             if ((1 << level) >= MAX_THREADS)
             {
-                return cascade::mymax(array, left, right, pres);
+                cascade::mymax(array, left, right, pres);
             }
             else
             {

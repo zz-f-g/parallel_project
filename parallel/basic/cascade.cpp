@@ -1,32 +1,12 @@
+#include <cmath>
 namespace cascade
 {
-
-    float sum_raw(const float data[], const int len) // data是原始数据，len为长度。结果通过函数返回
-    {
-        float sum_res = 0;
-        for (int i = 0; i < len; i++)
-        {
-            sum_res += data[i];
-        }
-        return sum_res;
-    }
-    float max_raw(const float data[], const int len) // data是原始数据，len为长度。结果通过函数返回
-    {
-        float max_temp = data[0];
-        for (int i = 0; i < len; i++)
-        {
-            if (data[i] > max_temp)
-                max_temp = data[i];
-        }
-        return max_temp;
-    }
-
     void sum(float *array, int left, int right, float *pres)
     {
         *pres = 0;
         for (int i = left; i <= right; i++)
         {
-            *pres += array[i];
+            *pres += log(sqrt(array[i]));
         }
     }
 
