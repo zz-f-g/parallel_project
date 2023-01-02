@@ -57,6 +57,7 @@ int main()
         close(sock);
         return 1;
     }
+    char flag;
 
     /********* SUM ********/
     cout << "--------------------------------" << endl;
@@ -72,6 +73,11 @@ int main()
         sizeof(float),
         0
     );
+    recv(
+        clientSock,
+        &flag,
+        sizeof(flag),
+        0);
 
     /********* MAX ********/
     cout << "--------------------------------" << endl;
@@ -87,7 +93,11 @@ int main()
         sizeof(float),
         0
     );
-
+    recv(
+        clientSock,
+        &flag,
+        sizeof(flag),
+        0);
 
     /********* SORT ********/
     parallel::merge_sort(arr, 0, HALF_NUM - 1, 0, 0);
@@ -97,7 +107,6 @@ int main()
 
     
 
-    char flag;
     for (int i = 0; i < HALF_NUM / BUF_SIZE; i++)
     {
         send(

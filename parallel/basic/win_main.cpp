@@ -46,6 +46,7 @@ int main()
         return 0;
     }
     cout << ">>> Connection Estabished with " << ADDR_SRV << "." << endl;
+    char flag = '+';
 
 
     /*********************** sum ***************************/
@@ -68,6 +69,11 @@ int main()
         sizeof(float),
         NULL
     );
+    send(
+        Connection,
+        &flag,
+        sizeof(flag),
+        NULL);
     sum_res += linux_sum;
 
 
@@ -100,6 +106,11 @@ int main()
         sizeof(float),
         NULL
     );
+    send(
+        Connection,
+        &flag,
+        sizeof(flag),
+        NULL);
     if (linux_max > max_res)
         max_res = linux_max;
 
@@ -140,7 +151,6 @@ int main()
 
     
 
-    char flag = '+';
     for (int i = 0; i < HALF_NUM / BUF_SIZE; i++)
     {
         recv(
